@@ -77,8 +77,11 @@
   .pod{width:160px;border-radius:16px 16px 0 0;background:linear-gradient(180deg,#4F8BE8,var(--blue));color:#fff;text-align:center;padding:14px 8px}
   .pod .n{font-weight:700;word-break:break-word} .pod .s{font-size:26px;font-weight:800}
   .pod.p1{height:210px;background:linear-gradient(180deg,#ffd75e,var(--gold));color:var(--ink)} .pod.p2{height:160px} .pod.p3{height:120px;opacity:.92}
+  .noms{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:10px 0 6px}
+  .nom{background:var(--sky);border-radius:16px;padding:14px;text-align:center}
+  .nom .ni{font-size:34px} .nom b{display:block;color:var(--blue);margin:4px 0} .nom span{color:#243353;font-size:15px}
   footer{color:#fff;opacity:.6;font-size:13px;margin-top:20px;text-align:center}
-  .conf{position:fixed;top:-30px;animation:fall linear forwards;pointer-events:none;z-index:9;border-radius:2px}
+  .conf{position:fixed;top:-30px;animation:fall linear forwards;pointer-events:none;z-index:130;border-radius:2px}
   @keyframes fall{to{transform:translateY(112vh) rotate(540deg);opacity:.8}}
   @media(max-width:640px){.opts{grid-template-columns:1fr}.card{padding:20px}.q{font-size:22px}h2{font-size:26px}.code{font-size:50px;letter-spacing:8px}.nm{width:100px}.opt{font-size:17px;padding:15px}}
 </style>
@@ -103,7 +106,7 @@ const L=['A','B','C','D'];
 
 /* q — питання, a — варіанти, c — індекс правильного (0=A), poll:true — опитування без правильної відповіді,
    немає "a" — завдання з текстовою відповіддю (ведучий нараховує бали кнопкою 👍),
-   h — підказка, e — пояснення (у завдань — підказка ведучому), p — текст промпту, t — секунд */
+   h — підказка, e — пояснення, p — текст промпту, t — секунд */
 const BLOCKS=[ {icon:"⚡",title:"Power Platform: свої люди",color:"#003DA5",t:20,mult:1,desc:"Розминка: інструменти, які ми знаємо й любимо.",qs:[  {q:"Що з цього НЕ входить до Power Platform?",a:["Power Apps","Power Automate","PowerPoint","Power BI"],c:2,e:"До Power Platform входять Power BI, Power Apps, Power Automate, Power Pages і Copilot Studio. PowerPoint — із Microsoft 365."},
   {q:"Для чого потрібен Power Automate?",a:["Для малювання діаграм","Для автоматизації рутинних дій між застосунками","Для зберігання файлів","Для відеодзвінків"],c:1,e:"Power Automate — автоматизація процесів і потоків між застосунками."},
   {q:"Як називається мова формул для розрахунку мір у Power BI?",a:["SQL","HTML","DAX","Python"],c:2,e:"DAX — Data Analysis Expressions."},
@@ -142,19 +145,23 @@ const BLOCKS=[ {icon:"⚡",title:"Power Platform: свої люди",color:"#003
   {q:"Що допоможе отримати від ШІ точнішу відповідь?",a:["Написати капсом","Поставити питання тричі","Додати контекст: дані, мету, формат відповіді","Писати якомога коротше"],c:2,e:"Контекст — найкращий друг промпту."},
   {q:"⚔️ ПРОМПТ-БАТЛ! Напишіть промпт, щоб ШІ пояснив замовнику, чому цифри у двох дашбордах не збігаються, у стилі Шерлока Холмса 🔍",t:120,e:"Ведучому: оберіть 2–3 найкращі промпти, запустіть їх у ШІ-чаті й зачитайте результат. Бали — кнопкою 👍."}
  ]},
- {icon:"🎬",title:"Не про роботу",color:"#E5527A",t:20,mult:1,desc:"Видихаємо: кіно, музика і трохи про нас самих.",qs:[
-  {q:"«Hasta la vista, baby» — з якого фільму?",a:["Рембо","Термінатор 2","Хижак","Універсальний солдат"],c:1,e:"«Термінатор 2: Судний день»."},
-  {q:"«Я твій батько» — який фільм?",a:["Зоряні війни","Володар перснів","Матриця","Гаррі Поттер"],c:0,e:"«Зоряні війни». Дарт Вейдер."},
-  {q:"Яка група виконала «Bohemian Rhapsody»?",a:["The Beatles","Queen","Led Zeppelin","Pink Floyd"],c:1,e:"Queen, 1975 рік."},
+ {icon:"🎬",title:"Не про роботу",color:"#E5527A",t:20,mult:1,desc:"Видихаємо: кіно, пара фактів і трохи про нас самих.",qs:[
+  {q:"Яку таблетку обирає Нео в «Матриці», щоб дізнатися правду?",a:["Синю","Червону","Зелену","Жовту"],c:1,e:"Червону. Синя означала б повернутися до звичного життя."},
+  {q:"Хто зіграв Залізну людину у фільмах Marvel?",a:["Кріс Еванс","Том Генкс","Роберт Дауні-молодший","Бред Пітт"],c:2,e:"Роберт Дауні-молодший."},
+  {q:"Як звати капітана з «Піратів Карибського моря»?",a:["Гектор Барбосса","Джек Горобець","Дейві Джонс","Вілл Тернер"],c:1,e:"Капітан Джек Горобець (Джек Спарроу в оригіналі)."},
+  {q:"Як називається планета у фільмі «Аватар»?",a:["Татуїн","Арракіс","Пандора","Криптон"],c:2,e:"Пандора."},
+  {q:"Хто зіграв Барбі у фільмі 2023 року?",a:["Емма Стоун","Марго Роббі","Зендея","Скарлетт Йоханссон"],c:1,e:"Марго Роббі."},
+  {q:"Хто залишився вдома сам у фільмі «Один вдома»?",a:["Гаррі","Пітер","Кевін","Макс"],c:2,e:"Кевін Маккалістер."},
+  {q:"Який фільм ви готові передивлятися нескінченно?",poll:true,a:["😂 Комедію","💥 Екшн","🎨 Мультфільм","🦸 Щось із Marvel"],e:"У кожного свій улюблений фільм «на вечір»."},
   {q:"Столиця Австралії — Сідней.",a:["Правда","Міф"],c:1,e:"Столиця — Канберра."},
   {q:"Скільки сердець у восьминога?",a:["1","2","3","8"],c:2,e:"Три серця."},
-  {q:"👀 ВГАДАЙ КОЛЕГУ! Ведучий зачитує факт «Я колись…». Напишіть, хто це.",t:40,e:"Ведучому: [ЗАМІНІТЬ на факт та ім’я колеги]. Бали — тим, хто вгадав."}
+  {q:"👀 ВГАДАЙ КОЛЕГУ! Ведучий зачитує вголос факт «Я колись…». Напишіть, хто це.",t:40,e:"Ведучий називає ім’я колеги. Бали — тим, хто вгадав (кнопка 👍)."}
  ]},
  {icon:"🏆",title:"Фінал ×2: P&G і ми",color:"#1DA57A",t:20,mult:2,desc:"Останній ривок. Бали подвоюються — відігратися ще можна.",qs:[
   {q:"Який із цих брендів належить P&G?",a:["Nivea","Pampers","Dove","Colgate"],c:1,e:"Pampers. Nivea — Beiersdorf, Dove — Unilever, Colgate — Colgate-Palmolive."},
   {q:"Для чого використовується Fairy?",a:["Для миття посуду","Для чищення зубів","Для гоління","Для прання"],c:0,e:"Fairy — засіб для миття посуду (бренд P&G)."},
-  {q:"[ЗАМІНІТЬ на свій мем] Що найчастіше чути на дзвінках нашої команди?",a:["«Ви мене чуєте?»","«Покажіть екран, будь ласка»","«Давайте візьмемо це офлайн»","Усе перелічене"],c:3,e:"Звісно, усе одразу."},
-  {q:"🎤 ФІНАЛ! Одне слово, яке описує наш Talent Hub 💙",t:30,e:"Ведучому: усі слова правильні, оберіть найтепліші й найсмішніші."}
+  {q:"Що найчастіше чути на дзвінках нашої команди?",a:["«Ви мене чуєте?»","«Покажіть екран, будь ласка»","«Давайте візьмемо це офлайн»","Усе перелічене"],c:3,e:"Звісно, усе одразу."},
+  {q:"🎤 ФІНАЛ! Одне слово, яке описує наш Talent Hub 💙",t:30,e:"Усі слова правильні. Ведучий обирає найтепліші й найсмішніші (кнопка 👍)."}
  ]}
 ];
 /* ================================================================= */
@@ -167,6 +174,20 @@ const bInfo=b=>({icon:b.icon,title:b.title,color:b.color,mult:b.mult||1});
 const chip=b=>`<span class="chip" style="--acc:${b.color}">${b.icon} ${esc(b.title)}${b.mult>1?' ×'+b.mult:''}</span>`;
 let S={},timer=null;
 const stop=()=>{clearInterval(timer);timer=null};
+
+/* ---------- персонажі (спільні для вступу й фіналу) ---------- */
+const PAL=[['#f1c9a5','#3b2a20','#0A4FC4','short'],['#c68642','#161616','#0891C7','long'],['#8d5524','#222','#6D5BD0','short'],['#ffdbb4','#b5651d','#D9822B','long'],['#e0ac69','#555','#1DA57A','bald'],['#d9a066','#222','#37466b','short']];
+function charSvg(p,cls,d){
+  var s=p[0],h=p[1],sh=p[2],st=p[3];
+  var back=st==='long'?'<path d="M22 48Q18 12 50 12Q82 12 78 48L78 82Q70 84 68 66L32 66Q30 84 22 82Z" fill="'+h+'"/>':'';
+  var front=st==='bald'?'':'<path d="M23 44Q22 13 50 13Q78 13 77 44Q66 26 50 28Q34 26 23 44Z" fill="'+h+'"/>';
+  return '<svg viewBox="0 0 100 160" class="ch '+(cls||'')+'" style="--d:'+(d||0)+'s"><g class="bd">'+back+
+  '<rect x="35" y="118" width="12" height="36" rx="5" fill="#1b2a4a"/><rect x="53" y="118" width="12" height="36" rx="5" fill="#1b2a4a"/>'+
+  '<rect class="arm l" x="19" y="76" width="11" height="38" rx="5.5" fill="'+sh+'"/><rect class="arm r" x="70" y="76" width="11" height="38" rx="5.5" fill="'+sh+'"/>'+
+  '<rect x="28" y="72" width="44" height="54" rx="16" fill="'+sh+'"/><circle cx="50" cy="46" r="27" fill="'+s+'"/>'+front+
+  '<g class="eyes"><ellipse cx="40" cy="48" rx="3.2" ry="4" fill="#0B1B3A"/><ellipse cx="60" cy="48" rx="3.2" ry="4" fill="#0B1B3A"/></g>'+
+  '<path d="M41 60Q50 68 59 60" stroke="#0B1B3A" stroke-width="2.5" fill="none" stroke-linecap="round"/></g></svg>';
+}
 
 /* звук (лише в ведучого) */
 let AC=null,MUTE=false;
@@ -193,7 +214,7 @@ function optsHTML(a,fn){return `<div class="opts">${a.map((o,k)=>fn
   ?`<button class="opt" id="o${k}" style="--oc:${COL[k%4]}" onclick="${fn}(${k})"><span class="l">${L[k]}</span>${esc(o)}</button>`
   :`<div class="opt" id="o${k}" style="--oc:${COL[k%4]}"><span class="l">${L[k]}</span>${esc(o)}</div>`).join('')}</div>`}
 function lbHtml(list,me=-1){const mx=Math.max(1,...list.map(x=>x.s));
-  return `<div class="lb">${list.map((x,k)=>`<div class="lbrow${k===me?' me':''}"><span class="rk">${k+1}</span><span class="nm">${esc(x.n)}</span><div class="lbbar"><i style="width:${x.s/mx*100}%"></i></div><b>${x.s}</b>${x.g?`<span class="plus">+${x.g}</span>`:''}</div>`).join('')}</div>`}
+  return `<div class="lb">${list.map((x,k)=>`<div class="lbrow${k===me?' me':''}"><span class="rk">${x.r||k+1}</span><span class="nm">${esc(x.n)}</span><div class="lbbar"><i style="width:${x.s/mx*100}%"></i></div><b>${x.s}</b>${x.g?`<span class="plus">+${x.g}</span>`:''}</div>`).join('')}</div>`}
 function pollHtml(a,counts,mine){const tot=counts.reduce((x,y)=>x+y,0)||1;
   return a.map((o,k)=>{const pc=Math.round(counts[k]/tot*100);return `<div class="pr${mine===k?' mine':''}"><div class="pbar" style="width:${pc}%"></div><span>${L[k]}. ${esc(o)}</span><b>${pc}%</b></div>`}).join('')}
 function picker(){return `<label class="t">Блоки гри (зайві можна вимкнути)</label><div class="blocks">${BLOCKS.map((b,i)=>
@@ -220,7 +241,7 @@ function runTimer(onEnd){
 
 /* ================= ГОЛОВНИЙ ЕКРАН ================= */
 function home(){
-  stop();killPeer();S={};document.body.classList.remove('pl');
+  stop();fvClose();killPeer();S={};document.body.classList.remove('pl');
   app.innerHTML=`<div class="card"><h2>${esc(TITLE)}</h2>
    <p class="sub">Онлайн-вікторина для команди: ведучий показує екран, решта відповідає зі своїх телефонів або ноутбуків.</p>
    <div class="chips">${BLOCKS.map(b=>`<span class="chip" style="--acc:${b.color}">${b.icon} ${esc(b.title)}</span>`).join('')}</div>
@@ -236,7 +257,7 @@ const send=(p,m)=>{if(p.conn&&p.conn.open){try{p.conn.send(m)}catch(e){}}};
 const bcast=m=>Object.values(S.players).forEach(p=>send(p,m));
 const ranking=()=>Object.values(S.players).sort((a,b)=>b.score-a.score||a.name.localeCompare(b.name));
 const rankOf=p=>1+Object.values(S.players).filter(x=>x.score>p.score).length;
-const topList=(n,g)=>ranking().slice(0,n).map(p=>({n:p.name,s:p.score,g:g?p.gain:0}));
+const topList=(n,g)=>ranking().slice(0,n).map(p=>({n:p.name,s:p.score,g:g?p.gain:0,r:rankOf(p)}));
 
 function hostSetup(){
   app.innerHTML=`<div class="card"><h2>Створити кімнату</h2><p class="sub">Оберіть блоки гри.</p>${picker()}
@@ -291,7 +312,7 @@ function hostMsg(c,m){
     const id=String(m.id).replace(/[^a-z0-9]/gi,'').slice(0,16)||'x';
     let p=S.players[id];
     if(!p){if(Object.keys(S.players).length>=MAXP){c.send({t:'full'});return}
-      p=S.players[id]={name:'',score:0,ans:null,txt:null,at:0,gain:0,ok:false,aw:false,revmsg:null}}
+      p=S.players[id]={name:'',score:0,ans:null,txt:null,at:0,gain:0,ok:false,aw:false,revmsg:null,str:0,maxStr:0,okc:0,minT:1e9}}
     p.name=String(m.name||'Гравець').slice(0,20);p.conn=c;c.pid=id;
     c.send({t:'ok'});hostSync(p);refreshHost();
   }else if(m.t==='ans'&&S.phase==='q'){
@@ -369,7 +390,9 @@ function hostReveal(){
   ps.forEach(p=>{
     p.ok=false;p.gain=0;
     if(q.a&&p.ans!==null){cnt[p.ans]++;
-      if(kind==='quiz'&&p.ans===q.c){p.ok=true;p.gain=Math.round((BASE_PTS+BASE_PTS*.5*Math.max(0,S.T-p.at)/S.T)*mu);p.score+=p.gain}}
+      if(kind==='quiz'&&p.ans===q.c){p.ok=true;p.gain=Math.round((BASE_PTS+BASE_PTS*.5*Math.max(0,S.T-p.at)/S.T)*mu);p.score+=p.gain;
+        p.okc++;p.str++;p.maxStr=Math.max(p.maxStr,p.str);p.minT=Math.min(p.minT,p.at)}}
+    if(kind==='quiz'&&!p.ok)p.str=0;
   });
   ps.forEach(p=>{p.revmsg={t:'rev',kind,a:q.a||null,counts:cnt,mine:p.ans,answered:answered(p),ok:p.ok,gain:p.gain,score:p.score,rank:rankOf(p),N:ps.length,
     ca:kind==='quiz'?q.a[q.c]:'',e:kind==='task'?'':(q.e||'')};send(p,p.revmsg)});
@@ -386,18 +409,77 @@ function hostReveal(){
   const last=S.i===S.list.length-1,b=$('main');b.textContent=last?'Підсумки 🏆':'Далі →';b.onclick=hostNext;
   refreshHost();
 }
+
+/* ---------- фінал ---------- */
+function noms(){
+  const ps=Object.values(S.players),out=[],nq=S.list.filter(q=>kindOf(q)==='quiz').length;
+  const f=ps.filter(p=>p.okc>0&&p.minT<1e9).sort((a,b)=>a.minT-b.minT)[0];
+  if(f)out.push(['⚡','Найшвидший',f.name+' — '+f.minT.toFixed(1)+' с']);
+  const s=ps.filter(p=>p.maxStr>=2).sort((a,b)=>b.maxStr-a.maxStr)[0];
+  if(s)out.push(['🔥','Найдовша серія',s.name+' — '+s.maxStr+' поспіль']);
+  const a=ps.filter(p=>p.okc>0).sort((x,y)=>y.okc-x.okc)[0];
+  if(a)out.push(['🎯','Найбільше правильних',a.name+' — '+a.okc+' з '+nq]);
+  return out.length?`<h3 class="bh">Номінації</h3><div class="noms">${out.map(o=>`<div class="nom"><div class="ni">${o[0]}</div><b>${o[1]}</b><span>${esc(o[2])}</span></div>`).join('')}</div>`:'';
+}
 function hostEnd(){
   stop();S.phase='end';const r=ranking(),top=topList(5,false);
-  r.forEach(p=>{p.endmsg={t:'end',score:p.score,rank:rankOf(p),N:r.length,top};send(p,p.endmsg)});
+  const win=(r.length&&r[0].score>0)?r.filter(p=>p.score===r[0].score):[];
+  const wn=win.slice(0,3).map(p=>p.name).join(', ')+(win.length>3?' та ще '+(win.length-3):'');
+  r.forEach(p=>{p.endmsg={t:'end',score:p.score,rank:rankOf(p),N:r.length,top,win:wn,tie:win.length>1};send(p,p.endmsg)});
   if(!r.length){app.innerHTML='<div class="card" style="text-align:center"><h2>Гру завершено</h2><p class="sub">Ніхто не грав 😅</p><button class="btn" onclick="home()">До меню</button></div>';return}
-  const pod=[r[1],r[0],r[2]].map((t,i)=>t?`<div class="pod ${['p2','p1','p3'][i]}"><div style="font-size:30px">${['🥈','🥇','🥉'][i]}</div><div class="n">${esc(t.name)}</div><div class="s">${t.score}</div></div>`:'').join('');
+  S.fin={win,others:r.filter(p=>!win.includes(p)).slice(0,4)};
+  const pod=[r[1],r[0],r[2]].map(t=>{if(!t)return '';const k=Math.min(rankOf(t),3);
+    return `<div class="pod p${k}"><div style="font-size:30px">${['🥇','🥈','🥉'][k-1]}</div><div class="n">${esc(t.name)}</div><div class="s">${t.score}</div></div>`}).join('');
   app.innerHTML=`<div class="card" style="text-align:center">
-   <h2>🏆 Переможець: ${esc(r[0].name)}</h2><p class="sub">Дякуємо за гру, Talent Hub!</p>
-   <div class="podium">${pod}</div>
-   ${r.length>3?lbHtml(r.slice(3,10).map(p=>({n:p.name,s:p.score,g:0})),-1).replace(/<span class="rk">(\d+)<\/span>/g,(m,n)=>`<span class="rk">${+n+3}</span>`):''}
-   <div class="row" style="justify-content:center;margin-top:24px"><button class="btn" onclick="home()">До меню</button></div></div>`;
-  sfx.fan();confetti();
+   <h2>${win.length?(win.length>1?'🏆 Переможці: ':'🏆 Переможець: ')+esc(wn):'Гру завершено'}</h2>
+   <p class="sub">${win.length>1?'Бали порівну — перемогу ділимо! ':''}Дякуємо за гру, Talent Hub!</p>
+   ${win.length?`<div class="podium">${pod}</div>`:''}
+   ${noms()}
+   ${r.length>3?`<h3 class="bh" style="text-align:left">Усі учасники</h3>`+lbHtml(r.slice(3,10).map(p=>({n:p.name,s:p.score,g:0,r:rankOf(p)}))):''}
+   <div class="row" style="justify-content:center;margin-top:24px">${win.length?'<button class="btn ghost" onclick="finaleStart()">🎬 Показати мультик ще раз</button>':''}<button class="btn" onclick="home()">До меню</button></div></div>`;
+  if(win.length)finaleStart();else{sfx.fan()}
 }
+
+/* ---------- мультик-фінал: команда підкидає переможця ---------- */
+let FV=null,FT=[];
+function fvStop(){FT.forEach(t=>{clearTimeout(t);clearInterval(t)});FT=[]}
+function fvClose(){fvStop();if(!FV)return;const r=FV;FV=null;r.classList.add('out');setTimeout(()=>r.remove(),500)}
+function finaleStart(){
+  if(!S.fin||!S.fin.win.length)return;
+  fvClose();
+  const ws=S.fin.win,oth=S.fin.others,two=ws.length>1;
+  const raw=ws.slice(0,3).map(p=>p.name).join(' & ')+(ws.length>3?' …':'');
+  const ttl=(two?'Переможці: ':'Переможець: ')+raw;
+  const wpos=two?[36,53]:[44.5],tpos=[13,25,66,78];
+  let team='',win='';
+  for(let i=0;i<4;i++){const o=oth[i];team+=`<div class="w" style="left:${tpos[i]}cqw">${charSvg(PAL[(i+2)%PAL.length],'throw',i*.1)}${o?`<span class="nl">${esc(o.name.slice(0,12))}</span>`:''}</div>`}
+  wpos.forEach((x,i)=>{win+=`<div class="w toss" style="left:${x}cqw;animation-delay:${i*.45}s">${charSvg(PAL[i],'up',0)}</div>`});
+  const root=document.createElement('div');root.id='fv';root.className='ov';
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)root.classList.add('rm');
+  root.innerHTML='<button class="skip">Пропустити ⏭</button><div class="st">'+
+   '<div class="sc on dk" id="fv1"><div class="dr1">🥁</div><div class="dt" id="fvt">Підраховуємо бали…</div></div>'+
+   '<div class="sc" id="fv2"><div class="gr"></div>'+
+    '<span class="fl" style="left:6cqw;top:16cqw">⭐</span><span class="fl" style="right:6cqw;top:14cqw;animation-delay:-1s">🏆</span><span class="fl" style="left:12cqw;top:30cqw;animation-delay:-.5s">✨</span><span class="fl" style="right:12cqw;top:28cqw;animation-delay:-1.5s">🎉</span>'+
+    '<div class="ban"><span>🏆 '+esc(ttl)+' 🏆</span></div><div class="blk"></div>'+team+win+'</div>'+
+   '<div class="cap" id="fvcap" style="opacity:0"></div>'+
+   '<button class="go" id="fvgo">Показати підсумки →</button></div>';
+  document.body.appendChild(root);FV=root;
+  root.addEventListener('click',e=>{
+    if(e.target.classList.contains('skip'))fvClose();
+    else if(e.target.id==='fvgo'){fvClose();confetti()}
+  });
+  const at=(ms,f)=>FT.push(setTimeout(f,ms));
+  const dr=setInterval(()=>beep(75+Math.random()*30,.07,'sine',.25),110);FT.push(dr);
+  at(1700,()=>{const t=document.getElementById('fvt');if(t)t.textContent='…і переможець!'});
+  at(3000,()=>clearInterval(dr));
+  at(3200,()=>{
+    document.getElementById('fv1').classList.remove('on');document.getElementById('fv2').classList.add('on');
+    const c=document.getElementById('fvcap');c.textContent='🎉 '+ttl+'! Підкидаємо всією командою!';c.style.opacity=1;
+    sfx.fan();confetti();
+  });
+  at(11000,()=>{const g=document.getElementById('fvgo');if(g)g.classList.add('on')});
+}
+document.addEventListener('keydown',e=>{if(FV&&e.code==='Escape')fvClose()});
 
 /* ================= ГРАВЕЦЬ ================= */
 function joinScreen(code){
@@ -497,16 +579,18 @@ function pRev(m){
 }
 function pEnd(m){
   S.over=true;
+  const ix=m.top?m.top.findIndex(x=>x.n===S.name&&x.s===m.score):-1;
   pView(pCard(`<div class="res">${['🥇','🥈','🥉'][m.rank-1]||'🎉'}</div><h2>Гру завершено</h2>
+   ${m.win?`<p class="sub">${m.tie?'Переможці':'Переможець'}: <b>${esc(m.win)}</b> 🏆</p>`:''}
    <div class="big">${m.score}</div><p class="sub" style="margin-top:12px">Ваше місце: <b>${m.rank}</b> з ${m.N}. Дякуємо за гру!</p>
-   ${m.top?lbHtml(m.top,m.rank-1):''}
+   ${m.top?lbHtml(m.top,ix):''}
    <button class="btn" onclick="home()">До меню</button>`));
   if(m.rank<=3)confetti();
 }
 
 /* ================= ЗАПУСК ================= */
 document.addEventListener('keydown',e=>{
-  if(['INPUT','TEXTAREA'].includes(e.target.tagName)||S.role!=='host'||S.phase==='lobby')return;
+  if(['INPUT','TEXTAREA'].includes(e.target.tagName)||S.role!=='host'||S.phase==='lobby'||FV)return;
   if(e.code==='Space'){e.preventDefault();if(document.activeElement)document.activeElement.blur();const m=$('main');if(m&&!m.disabled)m.click()}
 });
 window.addEventListener('beforeunload',e=>{if(S.role==='host'&&S.phase&&S.phase!=='lobby'){e.preventDefault();e.returnValue=''}});
@@ -514,32 +598,42 @@ const roomParam=(new URLSearchParams(location.search).get('room')||'').toUpperCa
 if(roomParam)joinScreen(roomParam);else home();
 </script>
 
-<!-- ================= МУЛЬТИК-ЗАСТАВКА ================= -->
+<!-- ================= МУЛЬТИКИ: СТИЛІ ================= -->
 <style>
-#iv{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:radial-gradient(900px 500px at 80% -10%,#2a6be0,transparent 60%),linear-gradient(165deg,#003DA5,#00235F);font-family:"Segoe UI",system-ui,sans-serif;transition:opacity .5s}
-#iv.out{opacity:0;pointer-events:none}
-#iv.rm *{animation-duration:.01s!important;animation-iteration-count:1!important}
-#iv .skip{position:absolute;top:14px;right:14px;z-index:5;background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:99px;padding:10px 18px;font-weight:600;font-size:15px;font-family:inherit;cursor:pointer}
-#iv .skip:hover{background:rgba(255,255,255,.32)}
-#iv .st{position:relative;width:min(96vw,calc(86vh*16/9));aspect-ratio:16/9;container-type:inline-size;overflow:hidden;border-radius:24px;box-shadow:0 30px 80px rgba(0,10,50,.5);background:#c9dcfa}
-#iv .sc{position:absolute;inset:0;opacity:0;transition:opacity .6s;background:linear-gradient(#EAF1FD,#c9dcfa)}
-#iv .sc.on{opacity:1}
-#iv .gr{position:absolute;left:0;right:0;bottom:0;height:15cqw;background:#9db9ea}
-#iv .cap{position:absolute;left:0;right:0;bottom:0;height:9cqw;background:rgba(0,35,95,.94);color:#fff;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 3cqw;font-size:2.1cqw;font-weight:600;z-index:3;transition:opacity .3s}
-#iv .w{position:absolute;bottom:12cqw;width:11cqw}
-#iv .ch{width:100%;display:block;overflow:visible}
-#iv .ch .arm{transform-box:fill-box;transform-origin:50% 8%}
-#iv .ch .eyes ellipse{transform-box:fill-box;transform-origin:center;animation:ivblink 4s infinite}
-#iv .wave .arm.r{animation:ivwave .6s ease-in-out infinite alternate}
-#iv .jump .bd{animation:ivjump .6s ease-in-out infinite alternate;animation-delay:var(--d,0s)}
-#iv .bob .bd{animation:ivbob .3s ease-in-out 12 alternate}
+.ov{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:radial-gradient(900px 500px at 80% -10%,#2a6be0,transparent 60%),linear-gradient(165deg,#003DA5,#00235F);font-family:"Segoe UI",system-ui,sans-serif;transition:opacity .5s}
+.ov.out{opacity:0;pointer-events:none}
+.ov.rm *{animation-duration:.01s!important;animation-iteration-count:1!important}
+.ov .skip{position:absolute;top:14px;right:14px;z-index:5;background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:99px;padding:10px 18px;font-weight:600;font-size:15px;font-family:inherit;cursor:pointer}
+.ov .skip:hover{background:rgba(255,255,255,.32)}
+.ov .st{position:relative;width:min(96vw,calc(86vh*16/9));aspect-ratio:16/9;container-type:inline-size;overflow:hidden;border-radius:24px;box-shadow:0 30px 80px rgba(0,10,50,.5);background:#c9dcfa}
+.ov .sc{position:absolute;inset:0;opacity:0;transition:opacity .6s;background:linear-gradient(#EAF1FD,#c9dcfa)}
+.ov .sc.on{opacity:1}
+.ov .gr{position:absolute;left:0;right:0;bottom:0;height:15cqw;background:#9db9ea}
+.ov .cap{position:absolute;left:0;right:0;bottom:0;height:9cqw;background:rgba(0,35,95,.94);color:#fff;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 3cqw;font-size:2.1cqw;font-weight:600;z-index:3;transition:opacity .3s}
+.ov .w{position:absolute;bottom:12cqw;width:11cqw}
+.ov .ch{width:100%;display:block;overflow:visible}
+.ov .ch .arm{transform-box:fill-box;transform-origin:50% 8%}
+.ov .ch .eyes ellipse{transform-box:fill-box;transform-origin:center;animation:ivblink 4s infinite}
+.ov .wave .arm.r{animation:ivwave .6s ease-in-out infinite alternate}
+.ov .jump .bd{animation:ivjump .6s ease-in-out infinite alternate;animation-delay:var(--d,0s)}
+.ov .bob .bd{animation:ivbob .3s ease-in-out 12 alternate}
 @keyframes ivblink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
 @keyframes ivwave{from{transform:rotate(-125deg)}to{transform:rotate(-165deg)}}
 @keyframes ivjump{from{transform:translateY(0)}to{transform:translateY(-9px)}}
 @keyframes ivbob{from{transform:translateY(0)}to{transform:translateY(-4px)}}
-#iv .bub{position:absolute;background:#fff;color:#0B1B3A;border-radius:2cqw;padding:1.2cqw 1.8cqw;font-size:1.9cqw;font-weight:700;line-height:1.3;box-shadow:0 .6cqw 2cqw rgba(0,40,120,.25);opacity:0;transform:scale(.6)}
-#iv .on .bub{animation:ivpopb .4s forwards;animation-delay:var(--at,0s)}
+.ov .bub{position:absolute;background:#fff;color:#0B1B3A;border-radius:2cqw;padding:1.2cqw 1.8cqw;font-size:1.9cqw;font-weight:700;line-height:1.3;box-shadow:0 .6cqw 2cqw rgba(0,40,120,.25);opacity:0;transform:scale(.6)}
+.ov .on .bub{animation:ivpopb .4s forwards;animation-delay:var(--at,0s)}
 @keyframes ivpopb{to{opacity:1;transform:scale(1)}}
+.ov .fl{position:absolute;font-size:3.5cqw;animation:ivfl 2.5s ease-in-out infinite alternate}
+@keyframes ivfl{to{transform:translateY(-1.5cqw) rotate(12deg)}}
+.ov .fin{position:absolute;inset:0;background:rgba(0,35,95,.93);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;opacity:0;pointer-events:none;transition:opacity .6s;z-index:4;padding:3cqw}
+.ov .fin.on{opacity:1;pointer-events:auto}
+.ov .fin h1{font-size:6.5cqw;margin-bottom:1.5cqw}
+.ov .fin p{font-size:2.3cqw;opacity:.9;margin-bottom:3cqw;max-width:60cqw;line-height:1.4}
+.ov .fin .b{background:#fff;color:#003DA5;border:0;border-radius:99px;padding:1.4cqw 4cqw;font-size:2.4cqw;font-weight:700;cursor:pointer;font-family:inherit}
+.ov .fin .b:hover{background:#EAF1FD}
+.ov .fin .b2{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.5);margin-left:1.5cqw}
+/* вступний мультик */
 #iv .bld{position:absolute;right:6cqw;bottom:14cqw;width:30cqw;height:32cqw;background:#fff;border-radius:1.5cqw 1.5cqw 0 0;box-shadow:0 1cqw 3cqw rgba(0,40,120,.25)}
 #iv .bld .sg{position:absolute;top:2.5cqw;left:3cqw;right:3cqw;background:#003DA5;color:#fff;text-align:center;font-weight:800;font-size:2.4cqw;padding:1cqw 0;border-radius:1cqw;letter-spacing:.2cqw}
 #iv .bld .dr{position:absolute;bottom:0;left:50%;width:8cqw;height:13cqw;margin-left:-4cqw;background:#4F8BE8;border-radius:.8cqw .8cqw 0 0}
@@ -578,42 +672,39 @@ if(roomParam)joinScreen(roomParam);else home();
 #iv .bars i{flex:1;border-radius:.6cqw .6cqw 0 0;background:linear-gradient(#4F8BE8,#003DA5);transform:scaleY(0);transform-origin:bottom}
 #iv .on .bars i{animation:ivgrow 1.2s cubic-bezier(.2,1.3,.4,1) forwards;animation-delay:var(--dl)}
 @keyframes ivgrow{to{transform:scaleY(1)}}
-#iv .fl{position:absolute;font-size:3.5cqw;animation:ivfl 2.5s ease-in-out infinite alternate}
-@keyframes ivfl{to{transform:translateY(-1.5cqw) rotate(12deg)}}
-#iv .fin{position:absolute;inset:0;background:rgba(0,35,95,.93);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;opacity:0;pointer-events:none;transition:opacity .6s;z-index:4;padding:3cqw}
-#iv .fin.on{opacity:1;pointer-events:auto}
-#iv .fin h1{font-size:6.5cqw;margin-bottom:1.5cqw}
-#iv .fin p{font-size:2.3cqw;opacity:.9;margin-bottom:3cqw;max-width:60cqw;line-height:1.4}
-#iv .fin .b{background:#fff;color:#003DA5;border:0;border-radius:99px;padding:1.4cqw 4cqw;font-size:2.4cqw;font-weight:700;cursor:pointer;font-family:inherit}
-#iv .fin .b:hover{background:#EAF1FD}
-#iv .fin .b2{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.5);margin-left:1.5cqw}
 .ivc{position:fixed;top:-20px;z-index:120;border-radius:2px;animation:ivcf linear forwards;pointer-events:none}
 @keyframes ivcf{to{transform:translateY(112vh) rotate(540deg)}}
+/* фінальний мультик */
+.ov .dk{background:linear-gradient(165deg,#0A4FC4,#00235F)}
+.ov .dr1{position:absolute;left:0;right:0;top:10cqw;text-align:center;font-size:16cqw;line-height:1;animation:fvdrum .22s ease-in-out infinite alternate}
+@keyframes fvdrum{from{transform:rotate(-8deg) scale(1)}to{transform:rotate(8deg) scale(1.1)}}
+.ov .dt{position:absolute;left:0;right:0;top:32cqw;text-align:center;color:#fff;font-size:4.4cqw;font-weight:800}
+.ov .ban{position:absolute;left:8cqw;right:8cqw;top:2cqw;text-align:center;z-index:2;opacity:0;transform:scale(.6)}
+.ov .ban span{display:inline-block;background:#fff;color:#003DA5;font-weight:800;font-size:3cqw;line-height:1.25;border-radius:3cqw;padding:1cqw 2.4cqw;box-shadow:0 .8cqw 2.4cqw rgba(0,40,120,.3)}
+.ov .on .ban{animation:ivpopb .5s .6s forwards}
+.ov .blk{position:absolute;left:25cqw;width:54cqw;bottom:11cqw;height:2.4cqw;background:linear-gradient(#ffd75e,#F2B705);border-radius:99px}
+.ov .nl{position:absolute;left:50%;transform:translateX(-50%);bottom:-3cqw;white-space:nowrap;font-size:1.7cqw;font-weight:700;color:#00235F;background:#fff;border-radius:99px;padding:.2cqw 1cqw;z-index:2}
+.ov .up .arm.r{transform:rotate(-155deg)}
+.ov .up .arm.l{transform:rotate(155deg)}
+.ov .throw .arm.l{animation:fvl .9s ease-in-out infinite alternate}
+.ov .throw .arm.r{animation:fvr .9s ease-in-out infinite alternate}
+@keyframes fvl{from{transform:rotate(135deg)}to{transform:rotate(172deg)}}
+@keyframes fvr{from{transform:rotate(-135deg)}to{transform:rotate(-172deg)}}
+.ov .on .toss{animation:fvtoss 1.9s infinite}
+@keyframes fvtoss{0%{transform:translateY(0) rotate(0);animation-timing-function:cubic-bezier(.2,.7,.4,1)}45%{transform:translateY(-16cqw) rotate(14deg);animation-timing-function:ease-in}55%{transform:translateY(-16cqw) rotate(-14deg);animation-timing-function:ease-in}100%{transform:translateY(0) rotate(0)}}
+.ov .go{position:absolute;right:3cqw;bottom:10.5cqw;z-index:6;background:#fff;color:#003DA5;border:0;border-radius:99px;padding:1cqw 3cqw;font-size:2cqw;font-weight:700;cursor:pointer;font-family:inherit;opacity:0;pointer-events:none;transition:opacity .4s}
+.ov .go.on{opacity:1;pointer-events:auto}
+.ov .go:hover{background:#EAF1FD}
 </style>
+
+<!-- ================= ВСТУПНИЙ МУЛЬТИК ================= -->
 <script>
 (function(){
 /* ======= ТЕКСТИ МУЛЬТИКА (можна змінювати) ======= */
-var C=[
- "Рік тому ми прийшли в Talent Hub. Power BI? Звучало як щось про електрику ⚡",
- "Перші місяці: Power Query, DAX і вічне «а чому не сходиться?»",
- "Замовники просили «показати все». На одній сторінці. Сорок візуалів.",
- "Але ми навчилися перетворювати «все» на зрозумілі рішення ✨",
- "Сьогодні ми — команда успішних діджитал-фахівців 🚀"
-];
-var P=[['#f1c9a5','#3b2a20','#0A4FC4','short'],['#c68642','#161616','#0891C7','long'],['#8d5524','#222','#6D5BD0','short'],['#ffdbb4','#b5651d','#D9822B','long'],['#e0ac69','#555','#1DA57A','bald']];
+var C=[ "Рік тому ми прийшли в Talent Hub. Power BI? Звучало як щось про електрику ⚡", "Перші місяці: Power Query, DAX і вічне «а чому не сходиться?»", "Замовники просили «показати все». На одній сторінці. Сорок візуалів.", "Але ми навчилися перетворювати «все» на зрозумілі рішення ✨", "Сьогодні ми — команда успішних діджитал-фахівців 🚀"];
+var P=PAL.slice(0,5),ch=charSvg;
 /* ================================================ */
 var T=[],mt=null,ctx=null,root=null;
-function ch(p,cls,d){
-  var s=p[0],h=p[1],sh=p[2],st=p[3];
-  var back=st==='long'?'<path d="M22 48Q18 12 50 12Q82 12 78 48L78 82Q70 84 68 66L32 66Q30 84 22 82Z" fill="'+h+'"/>':'';
-  var front=st==='bald'?'':'<path d="M23 44Q22 13 50 13Q78 13 77 44Q66 26 50 28Q34 26 23 44Z" fill="'+h+'"/>';
-  return '<svg viewBox="0 0 100 160" class="ch '+(cls||'')+'" style="--d:'+(d||0)+'s"><g class="bd">'+back+
-  '<rect x="35" y="118" width="12" height="36" rx="5" fill="#1b2a4a"/><rect x="53" y="118" width="12" height="36" rx="5" fill="#1b2a4a"/>'+
-  '<rect class="arm l" x="19" y="76" width="11" height="38" rx="5.5" fill="'+sh+'"/><rect class="arm r" x="70" y="76" width="11" height="38" rx="5.5" fill="'+sh+'"/>'+
-  '<rect x="28" y="72" width="44" height="54" rx="16" fill="'+sh+'"/><circle cx="50" cy="46" r="27" fill="'+s+'"/>'+front+
-  '<g class="eyes"><ellipse cx="40" cy="48" rx="3.2" ry="4" fill="#0B1B3A"/><ellipse cx="60" cy="48" rx="3.2" ry="4" fill="#0B1B3A"/></g>'+
-  '<path d="M41 60Q50 68 59 60" stroke="#0B1B3A" stroke-width="2.5" fill="none" stroke-linecap="round"/></g></svg>';
-}
 function html(){
   var cells='',cl=['#4F8BE8','#0891C7','#6D5BD0','#D9822B','#1DA57A','#E5527A','#003DA5'];
   for(var i=0;i<40;i++)cells+='<span style="background:'+cl[i%7]+';--dl:'+(i*.07).toFixed(2)+'s"></span>';
@@ -632,7 +723,7 @@ function html(){
    '<div class="w" style="left:6cqw">'+ch(['#d9a066','#222','#37466b','short'])+'</div>'+
    '<div class="win"><div class="ivgrid" id="ivg">'+cells+'</div></div><div class="poof" id="ivpoof">💥</div>'+
    '<div class="bub" style="--at:3.6s;right:2cqw;top:3cqw;width:22cqw">Давайте уточнимо, які рішення ви за ним приймаєте 😉</div>'+
-   '<div class="w" style="right:8cqw">'+ch(P[2])+'<span class="em" id="ivdev" style="left:7cqw;top:-1cqw;font-size:4cqw">💦</span></div></div>'+
+   '<div class="w" style="right:8cqw">'+ch(P[2])+'<span class="em" id="ivdev" style="left:7cqw;top:-1cqw;font-size:4cqw">😰</span></div></div>'+
   '<div class="sc" id="iv4"><div class="gr"></div><div class="dash"><div class="kp"><div><b id="k1">0</b>міс. у Talent Hub</div><div><b>☕ ∞</b>чашок кави</div><div><b id="k2">0</b>зростання навичок</div></div>'+
    '<div class="bars"><i style="height:35%;--dl:.1s"></i><i style="height:50%;--dl:.25s"></i><i style="height:42%;--dl:.4s"></i><i style="height:70%;--dl:.55s"></i><i style="height:60%;--dl:.7s"></i><i style="height:92%;--dl:.85s"></i></div></div>'+
    '<span class="fl" style="left:6cqw;top:8cqw">⭐</span><span class="fl" style="right:6cqw;top:6cqw;animation-delay:-1s">🏆</span><span class="fl" style="left:10cqw;top:24cqw;animation-delay:-.5s">🚀</span><span class="fl" style="right:9cqw;top:22cqw;animation-delay:-1.5s">✨</span>'+team+'</div>'+
@@ -653,7 +744,7 @@ function musicStart(){
 }
 function musicStop(){clearInterval(mt);mt=null}
 function fanfare(){if(!ctx)return;[523,659,784,1047].forEach(function(f,i){note(f,.3,.08,'triangle',i*.15)})}
-function confetti(){
+function confettiIv(){
   var cs=['#003DA5','#4F8BE8','#F2B705','#1DA57A','#ffffff'];
   for(var i=0;i<60;i++){var d=document.createElement('div');d.className='ivc';
     d.style.cssText='left:'+Math.random()*100+'vw;background:'+cs[i%5]+';width:'+(6+Math.random()*8)+'px;height:'+(10+Math.random()*10)+'px;animation-duration:'+(2+Math.random()*3)+'s;animation-delay:'+Math.random()*1+'s';
@@ -670,7 +761,7 @@ function play(){
   at(5200,function(){scene(2);cap(C[1])});
   at(11000,function(){scene(3);cap(C[2])});
   at(14600,function(){$i('ivg').classList.add('tidy');$i('ivpoof').classList.add('on');$i('ivdev').textContent='😎';cap(C[3])});
-  at(17800,function(){scene(4);cap(C[4]);count($i('k1'),12,'');count($i('k2'),100,'%');fanfare();confetti()});
+  at(17800,function(){scene(4);cap(C[4]);count($i('k1'),12,'');count($i('k2'),100,'%');fanfare();confettiIv()});
   at(23500,function(){$i('ivfin').classList.add('on')});
 }
 function close(){
@@ -679,7 +770,7 @@ function close(){
 }
 function open(){
   if(root)close();
-  root=document.createElement('div');root.id='iv';
+  root=document.createElement('div');root.id='iv';root.className='ov';
   if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)root.classList.add('rm');
   root.innerHTML=html();document.body.appendChild(root);
   root.addEventListener('click',function(e){
