@@ -103,7 +103,14 @@
 const TITLE="Talent Hub Quiz", BASE_PTS=100, PFX="thqpp26-", MAXP=60;
 const COL=['#0A4FC4','#0891C7','#6D5BD0','#D9822B'];
 const L=['A','B','C','D'];
-const PCFG={config:{iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'}]}};
+
+/* Налаштування зв'язку. TURN-сервер допомагає, коли мережа блокує пряме з'єднання.
+   Це безкоштовний публічний сервер без гарантій. Якщо маєте власні дані TURN
+   (наприклад, з metered.ca), замініть urls/username/credential нижче. */
+const PCFG={config:{iceServers:[
+  {urls:'stun:stun.l.google.com:19302'},
+  {urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'}
+]}};
 
 /* q — питання, a — варіанти, c — індекс правильного (0=A), poll:true — опитування без правильної відповіді,
    немає "a" — завдання з текстовою відповіддю (ведучий нараховує бали кнопкою 👍),
@@ -504,7 +511,7 @@ function pConnect(silent){
   if(typeof Peer==='undefined')return pView(errCard('Не завантажився модуль зв’язку. Перевірте інтернет і оновіть сторінку.'));
   if(!silent)pView(pCard('<div class="bigico">🔌</div><h2>Підключаємося…</h2>'));
   const old=S.peer;S.peer=null;try{old&&old.destroy()}catch(e){}
-  const peer=new Peer(PCFG)S.peer=peer;S.ok=false;
+  const peer=new Peer(PCFG);S.peer=peer;S.ok=false;
   const to=setTimeout(()=>{if(!S.ok&&S.peer===peer)pFail('Не вдалося підключитися за 15 секунд. Перевірте код кімнати. З корпоративного ноутбука мережа може блокувати з’єднання — спробуйте телефон або особистий інтернет.')},15000);
   peer.on('error',e=>{
     if(S.peer!==peer)return;
@@ -634,7 +641,6 @@ if(roomParam)joinScreen(roomParam);else home();
 .ov .fin .b{background:#fff;color:#003DA5;border:0;border-radius:99px;padding:1.4cqw 4cqw;font-size:2.4cqw;font-weight:700;cursor:pointer;font-family:inherit}
 .ov .fin .b:hover{background:#EAF1FD}
 .ov .fin .b2{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.5);margin-left:1.5cqw}
-/* вступний мультик */
 #iv .bld{position:absolute;right:6cqw;bottom:14cqw;width:30cqw;height:32cqw;background:#fff;border-radius:1.5cqw 1.5cqw 0 0;box-shadow:0 1cqw 3cqw rgba(0,40,120,.25)}
 #iv .bld .sg{position:absolute;top:2.5cqw;left:3cqw;right:3cqw;background:#003DA5;color:#fff;text-align:center;font-weight:800;font-size:2.4cqw;padding:1cqw 0;border-radius:1cqw;letter-spacing:.2cqw}
 #iv .bld .dr{position:absolute;bottom:0;left:50%;width:8cqw;height:13cqw;margin-left:-4cqw;background:#4F8BE8;border-radius:.8cqw .8cqw 0 0}
@@ -675,7 +681,6 @@ if(roomParam)joinScreen(roomParam);else home();
 @keyframes ivgrow{to{transform:scaleY(1)}}
 .ivc{position:fixed;top:-20px;z-index:120;border-radius:2px;animation:ivcf linear forwards;pointer-events:none}
 @keyframes ivcf{to{transform:translateY(112vh) rotate(540deg)}}
-/* фінальний мультик */
 .ov .dk{background:linear-gradient(165deg,#0A4FC4,#00235F)}
 .ov .dr1{position:absolute;left:0;right:0;top:10cqw;text-align:center;font-size:16cqw;line-height:1;animation:fvdrum .22s ease-in-out infinite alternate}
 @keyframes fvdrum{from{transform:rotate(-8deg) scale(1)}to{transform:rotate(8deg) scale(1.1)}}
@@ -701,10 +706,8 @@ if(roomParam)joinScreen(roomParam);else home();
 <!-- ================= ВСТУПНИЙ МУЛЬТИК ================= -->
 <script>
 (function(){
-/* ======= ТЕКСТИ МУЛЬТИКА (можна змінювати) ======= */
 var C=[ "Рік тому ми прийшли в Talent Hub. Power BI? Звучало як щось про електрику ⚡", "Перші місяці: Power Query, DAX і вічне «а чому не сходиться?»", "Замовники просили «показати все». На одній сторінці. Сорок візуалів.", "Але ми навчилися перетворювати «все» на зрозумілі рішення ✨", "Сьогодні ми — команда успішних діджитал-фахівців 🚀"];
 var P=PAL.slice(0,5),ch=charSvg;
-/* ================================================ */
 var T=[],mt=null,ctx=null,root=null;
 function html(){
   var cells='',cl=['#4F8BE8','#0891C7','#6D5BD0','#D9822B','#1DA57A','#E5527A','#003DA5'];
