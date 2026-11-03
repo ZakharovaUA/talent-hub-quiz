@@ -103,6 +103,7 @@
 const TITLE="Talent Hub Quiz", BASE_PTS=100, PFX="thqpp26-", MAXP=60;
 const COL=['#0A4FC4','#0891C7','#6D5BD0','#D9822B'];
 const L=['A','B','C','D'];
+const PCFG={config:{iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'}]}};
 
 /* q — питання, a — варіанти, c — індекс правильного (0=A), poll:true — опитування без правильної відповіді,
    немає "a" — завдання з текстовою відповіддю (ведучий нараховує бали кнопкою 👍),
@@ -272,7 +273,7 @@ function hostCreate(){
   openRoom(0);
 }
 function openRoom(n){
-  const code=mkCode(),peer=new Peer(PFX+code);S.peer=peer;
+  const code=mkCode(),peer=new Peer(PFX+code,PCFG);S.peer=peer;
   peer.on('open',()=>{if(S.peer!==peer)return;S.code=code;hostLobby()});
   peer.on('connection',c=>{
     c.on('data',m=>hostMsg(c,m));
@@ -503,7 +504,7 @@ function pConnect(silent){
   if(typeof Peer==='undefined')return pView(errCard('Не завантажився модуль зв’язку. Перевірте інтернет і оновіть сторінку.'));
   if(!silent)pView(pCard('<div class="bigico">🔌</div><h2>Підключаємося…</h2>'));
   const old=S.peer;S.peer=null;try{old&&old.destroy()}catch(e){}
-  const peer=new Peer();S.peer=peer;S.ok=false;
+  const peer=new Peer(PCFG)S.peer=peer;S.ok=false;
   const to=setTimeout(()=>{if(!S.ok&&S.peer===peer)pFail('Не вдалося підключитися за 15 секунд. Перевірте код кімнати. З корпоративного ноутбука мережа може блокувати з’єднання — спробуйте телефон або особистий інтернет.')},15000);
   peer.on('error',e=>{
     if(S.peer!==peer)return;
